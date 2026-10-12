@@ -2,4 +2,10 @@ framework:
   - terraform
 compact: true
 quiet: true
-skip-check: []
+skip-check:
+  - CKV_AZURE_59   # El sitio estático es público por diseño; restringir la red también rompería el pipeline porque los runners de GitHub usan IPs dinámicas.
+  - CKV2_AZURE_33  # Un endpoint privado requiere una VNet y aumenta el costo; no tiene sentido para un sitio público con un presupuesto máximo de USD 5.
+  - CKV2_AZURE_1   # Una clave administrada por el cliente requiere Key Vault y permisos extra; aquí solo se almacena HTML público y Azure ya cifra los datos por defecto.
+  - CKV_AZURE_206  # GRS o ZRS aumentaría el costo; si se pierde el contenido, se puede reconstruir desde Git, que es la fuente de verdad.
+  - CKV_AZURE_33   # La cuenta no usa el servicio de colas, así que no hay actividad de Queue que necesitemos registrar.
+  - CKV2_AZURE_40  # Se mantiene Shared Key porque Terraform la usa para subir index.html al contenedor $web; la alternativa con identidad requiere permisos adicionales (ver Pregunta 5).
